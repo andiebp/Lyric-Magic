@@ -69,3 +69,90 @@
          });
      });
  });
+
+$(document).ready(function(){
+ 
+	var config=
+      {
+	     apiKey: "AIzaSyD_4SK9aYkug1xi1bByqD37ZeTpLs_Z-Wc",
+       authDomain: "lyricmagic-f5a1e.firebaseapp.com",
+       databaseURL: "https://lyricmagic-f5a1e.firebaseio.com",
+       projectId: "lyricmagic-f5a1e",
+       storageBucket: "lyricmagic-f5a1e.appspot.com",
+       messagingSenderId: "774077012043"
+	
+      };
+     var AlreadyExists=false;
+     var AllExistingUsers=[];
+     var CurrentUser="";
+      var GetUser="";
+     firebase.initializeApp(config);
+     var db= firebase.database();
+     var ref = db.ref("Users");
+     ref.on("child_added", gotData,errData);
+
+
+     $("#UserLogin").on("click",function()
+     {
+    
+       CurrentUser= $("#AName").val();
+       GetUser=CheckIfUserExists();
+    
+
+
+     if(!AlreadyExists)
+  {
+        var User=db.ref('Users');
+        var UserData={
+                   Name:CurrentUser,
+                   SearchText:''
+                     }
+        User.push(UserData);
+  }
+
+     //   window.location.href=("file:///C:/Users/fhusa/Downloads/Lyric-Magic-master/magic.html");
+});
+
+
+
+function gotData(data)
+{
+  console.log("inside gotData");
+  var users=data.val();
+  var key=data.key;
+
+      if(CurrentUser==="")
+       {    
+             AllExistingUsers.push({[key]:users});
+            
+             
+       }
+  }
+
+function CheckIfUserExists()
+{
+     for(var o=0;o<AllExistingUsers.length;o++)
+        {  
+           console.log(AllExistingUsers[o]);
+             if(AllExistingUsers[o].Name== CurrentUser)
+               {
+                
+                AlreadyExists=true;
+                return AllExistingUsers[o];
+                break;
+               } 
+       }    
+}
+
+function errData()
+{
+  console.log("An error occured");
+}
+});
+
+
+
+
+
+	
+	
