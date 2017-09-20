@@ -1,6 +1,7 @@
  var queryURL;
  var track1;
  var Spotifyttrack;
+ var player = document.getElementById("player")
  $("#button-1").on("click", function (event) {
      var lyric = $("#lyric-input").val().trim();
      queryURL = "http://api.musixmatch.com/ws/1.1/track.search?apikey=cd0a1c19b692fc8fd0f9825d26856c45&q_lyrics=" + lyric + "&page_size=10";
@@ -13,12 +14,12 @@
 
 
          var OBJresponse = JSON.parse(response)
-         console.log(OBJresponse)
-         var OBJresponse2 = OBJresponse.message.body.track_list["7"].track
-         var artistname = OBJresponse2.artist_name
-         var albumname = OBJresponse2.album_name
-         track1 = OBJresponse2.track_name
-         var imgURL = OBJresponse2.album_coverart_100x100;
+         //console.log(OBJresponse)
+         // var OBJresponse2 = OBJresponse.message.body.track_list[i].track
+         //var artistname = OBJresponse2.artist_name
+         //var albumname = OBJresponse2.album_name
+         //track1 = OBJresponse2.track_name
+         // var imgURL = OBJresponse2.album_coverart_100x100;
          // console.log(track1)
          //  console.log(artistname)
          //  console.log(OBJresponse2)
@@ -38,6 +39,7 @@
          $(".artistbutton").on("click", function (event) {
              var songartist2 = $(this).attr("data-name")
              console.log(songartist2)
+             //location.assign("player.html")
              queryURL = "https://api.spotify.com/v1/search?q=" + songartist2 + "&type=track"
              $.ajax({
                  url: queryURL,
@@ -56,13 +58,13 @@
                      name: 'frame2',
                      id: 'frame2',
                      src: "//www.musixmatch.com/lyrics/" + vanity + "/embed?theme=light"
-                 });
+                 }).appendTo('body');
                  $('<iframe />');
                  $('<iframe />', {
                      name: 'frame1',
                      id: 'frame1',
                      src: "https://open.spotify.com/embed?uri=spotify%3Atrack%3A" + Spotifyttrack + ""
-                 }).appendTo('body');
+                 }).appendTo("body");
              });
          });
      });
