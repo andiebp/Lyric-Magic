@@ -3,3 +3,7 @@
 .container {}
 
 .btn {}
+
+#topSearches button {
+    width: 100%;
+}

@@ -10,59 +10,60 @@
     <script rel="stylesheet" type="text/css" src="assets/css/reset.css"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/4.3.1/firebase.js"></script>
+    <script type="text/javascript" src="http://tracking.musixmatch.com/t1.0/AMa6hJCIEzn1v8RuOP"></script>
     <script src="assets/javascript/javascript.js"></script>
 </head>
 
 <body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li class="active">
+                        <a href="magic.html">Magic</a>
+                    </li>
+                </ul>
+                <div class="navbar-form navbar-right">
+                    <label>Welcome <span id="username">Username</span></label>
+                    <button type="submit" class="btn btn-default">Log Out</button>
+                </div>
+            </div>
+        </div>
+    </nav>
     <div class="page-header text-center" id="header">
         <h1>Musi'Called</h1>
         <h3>What's That Song, Again?</h3>
     </div>
     <div class="container">
-        <div class="row">
-            <form class="text-center">
-                <input type="text" placeholder="Enter Lyrics Here" style="width: calc(100% - 110px); max-width: 500px" id="lyric-input" name="songSearched">
-                <button type="submit" class="btn btn-default" id="button-1">
-                    Find This Song!
-                </button>
-            </form>
+        <div class="row text-center">
+            <input type="text" placeholder="Enter Lyrics Here" style="width: calc(100% - 110px); max-width: 500px" id="lyrics" name="songSearched">
+            <button class="btn btn-default" id="searchLyrics">
+                Find This Song!
+            </button>
         </div>
         <br/>
-        <div class="row text-center panel panel-default" id="searchresults" style="max-height: 480px">
+        <div class="row text-center panel panel-default" style="max-height: 480px">
             <div class="panel-heading">
                 <h3 class="panel-title">Search Results</h3>
             </div>
-            <div class="panel-body">
-                Links to songs here
+            <div class="panel-body" id="searchResults">
+                Results appear here
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4" id="player">
-                <iframe src="https://open.spotify.com/embed?uri=spotify%3Atrack%3A33Q6ldVXuJyQmqs8BmAa0k" width="350" height="450px" frameborder="0" allowtransparency="true"></iframe>
-            </div>
-            <div class="col-lg-5" id="lyricsPanel">
-                <div class="panel panel-default" style="max-height: 480px">
-                    <div class=" panel-heading">
-                        <h3 class="panel-title">Song Title</h3>
-                    </div>
-                    <div class="panel-body" style="height: 350px;">
-                        Lyrics go here
-                    </div>
-                </div>
-            </div>
+            <div class="col-lg-4" id="player"></div>
+            <div class="col-lg-5" id="lyricsPanel"></div>
             <div class="col-lg-3" id="searchHistory">
                 <div class="panel panel-default" style="height: 450px; overflow-y: auto">
                     <div class="panel-heading">Your Last 10 Searches</div>
                     <div class="panel-body">
-                        <ul class="list-group" id="topSearches">
-                            <li class="list-group-item">
-                                Item 1...
-                            </li>
-                        </ul>
+                        <ul class="list-group" id="topSearches"></ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>

@@ -1,4 +1,10 @@
 $(document).ready(function () {
+    var SpotifyAPI = "BQDPO7mxxTWdB6FquaK9SonDiQckw79hx5q5QjOnAgs5aFrwzX23asMmg5Qjrvnn0HpJ57WzawDki9WdCq1RETbSuFIB-g1TemGMagUF73if4Xy_rag3mmB8-hg5bI8NGvdNaeL1XdDiww";
+    var MusixMatchAPI = "cd0a1c19b692fc8fd0f9825d26856c45";
+    var FirebaseAPI = "AIzaSyD_4SK9aYkug1xi1bByqD37ZeTpLs_Z-Wc";
+    var FirebaseProject = "lyricmagic-f5a1e";
+    var FirebaseSenderId = "774077012043";
+
     function gotData(data) {
         console.log("inside gotData");
         var users = data.val();
@@ -27,12 +33,12 @@ $(document).ready(function () {
     }
 
     var config = {
-        apiKey: "AIzaSyD_4SK9aYkug1xi1bByqD37ZeTpLs_Z-Wc",
-        authDomain: "lyricmagic-f5a1e.firebaseapp.com",
-        databaseURL: "https://lyricmagic-f5a1e.firebaseio.com",
-        projectId: "lyricmagic-f5a1e",
-        storageBucket: "lyricmagic-f5a1e.appspot.com",
-        messagingSenderId: "774077012043"
+        apiKey: FirebaseAPI,
+        authDomain: FirebaseProject + ".firebaseapp.com",
+        databaseURL: "https://" + FirebaseProject + ".firebaseio.com",
+        projectId: FirebaseProject,
+        storageBucket: FirebaseProject + ".appspot.com",
+        messagingSenderId: FirebaseSenderId
 
     };
     var AlreadyExists = false;
@@ -57,72 +63,115 @@ $(document).ready(function () {
         }
     });
 
-    var queryURL;
-    var track1;
-    var Spotifyttrack;
-    var player = document.getElementById("player");
-    $("#button-1").on("click", function (event) {
-        var lyric = $("#lyric-input").val().trim();
-        queryURL = "http://api.musixmatch.com/ws/1.1/track.search?apikey=cd0a1c19b692fc8fd0f9825d26856c45&q_lyrics=" + lyric + "&page_size=10";
-        $.ajax({
-            url: queryURL,
-            method: "GET",
-            crossDomain: true
-        }).done(function (response) {
-            var OBJresponse = JSON.parse(response);
-            //console.log(OBJresponse);
-            // var OBJresponse2 = OBJresponse.message.body.track_list[i].track;
-            //var artistname = OBJresponse2.artist_name;
-            //var albumname = OBJresponse2.album_name;
-            //track1 = OBJresponse2.track_name;
-            // var imgURL = OBJresponse2.album_coverart_100x100;
-            // console.log(track1);
-            //  console.log(artistname);
-            //  console.log(OBJresponse2);
-            for (var i = 0; i < OBJresponse.message.body.track_list.length; i++) {
-                console.log(OBJresponse.message.body.track_list[i].track.artist_name);
-                var vanity = OBJresponse.message.body.track_list[i].track.commontrack_vanity_id;
-                var artistname1 = OBJresponse.message.body.track_list[i].track.artist_name;
-                var songname1 = OBJresponse.message.body.track_list[i].track.track_name;
-                var song_artist = artistname1 + "+" + songname1;
-                var a = $("<button>");
+    //Generates a Track button
+    function createTrack(track) {
+        var a = $("<button class='artistbutton'/>");
+        a.text(track.artist_name + " - " + track.track_name);
+        a.attr("data-artist", track.artist_name);
+        a.attr("data-track", track.track_name);
+        a.attr("data-vanity", track.commontrack_vanity_id);
+        return a;
+    }
 
-                a.addClass("artistbutton");
-                a.text(song_artist);
-                a.attr("data-name", song_artist)
-                $("#searchresults").append(a);
-            }
-            $(".artistbutton").on("click", function (event) {
-                var songartist2 = $(this).attr("data-name");
-                console.log(songartist2);
-                //location.assign("player.html")
-                queryURL = "https://api.spotify.com/v1/search?q=" + songartist2 + "&type=track";
-                $.ajax({
-                    url: queryURL,
-                    method: "GET",
-                    crossDomain: true,
-                    headers: {
-                        "Authorization": "Bearer BQCeJiwTRav5P2sphMZd4N4jXbJj81xvREqBpBycfZMc6KxPHztvNLX83Y2kqXrvPulH1btRKYdrejG2AXlrf4ir-GaZJEypAyKYkDIUgl8NwTbNE74epLTeF0CHF9vr8IhoXn2LJqAh5w"
-                    }
-                }).done(function (response) {
-                    console.log(vanity);
-                    console.log(response);
-                    var Spotifyttrack = response.tracks.items["0"].id;
-                    console.log(Spotifyttrack);
-                    $('<iframe/>');
-                    $('<iframe/>', {
-                        name: 'frame2',
-                        id: 'frame2',
-                        src: "//www.musixmatch.com/lyrics/" + vanity + "/embed?theme=light"
-                    }).appendTo('body');
-                    $('<iframe />');
-                    $('<iframe />', {
-                        name: 'frame1',
-                        id: 'frame1',
-                        src: "https://open.spotify.com/embed?uri=spotify%3Atrack%3A" + Spotifyttrack
-                    }).appendTo("body");
-                });
-            });
-        });
+    //Setup future AJAX requests with Spotify Auth header
+    $.ajaxSetup({
+        headers: {
+            Authorization: "Bearer " + SpotifyAPI
+        }
     });
+
+    //Set up all future artist buttons to allow play
+    $(".container").on("click", ".artistbutton", function (event) {
+        var artist = $(this).attr("data-artist");
+        var track = $(this).attr("data-track");
+        var vanity = $(this).attr("data-vanity");
+        var trackObj = {
+            artist_name: artist,
+            track_name: track,
+            commontrack_vanity_id: vanity
+        };
+
+        //Get Spotify track ID from artist and track info and setup player
+        var query = "artist:" + artist + " track:" + track;
+        $.getJSON("https://api.spotify.com/v1/search", {
+            q: query,
+            type: "track",
+            limit: 1
+        }, play);
+
+        //Create Lyrics panel from musixmatch vanity string
+        var iframe = $('<iframe/>', {
+            name: 'lyrics',
+            id: 'lyricsIFrame',
+            height: 450,
+            width: "100%",
+            src: "//www.musixmatch.com/lyrics/" + vanity + "/embed?theme=light"
+        });
+        $('#lyricsPanel').html(iframe);
+
+        //Check if it exists in top searches
+        var button = $('#topSearches .artistbutton[data-vanity="' + vanity + '"]');
+        if (button.length === 0) { //If it doesn't exist, make a copy
+            button = createTrack(trackObj);
+            //Insert Firebase code to add to Database here using artist, track, and vanity
+        }
+
+        $("#topSearches").prepend(button); //Add to top of searches
+        $("#topSearches button:gt(9)").remove(); //Delete extra buttons
+    });
+
+    function play(response) {
+        console.log(response.tracks.href);
+        console.log(response.tracks);
+        var trackId = response.tracks.items[0].id;
+        var iframe = $('<iframe />', {
+            name: 'spotify',
+            id: 'playerIFrame',
+            height: 450,
+            width: "100%",
+            src: "https://open.spotify.com/embed?uri=spotify:track:" + trackId
+        });
+        $('#player').html(iframe);
+    }
+
+    //Set up search functions
+    $("#searchLyrics").click(search);
+    $("#lyrics").keypress(function (e) {
+        if (e.which == 13) { //User pressed enter
+            search();
+        }
+    });
+
+    function search() {
+        var lyrics = $("#lyrics").val().trim();
+        if (lyrics)
+            $.getJSON("http://api.musixmatch.com/ws/1.1/track.search", {
+                apikey: MusixMatchAPI,
+                q_lyrics: lyrics,
+                page_size: 10
+            }, handleMusix);
+    }
+
+    function handleMusix(response) {
+        var data = response.message;
+        $("#searchResults").toggleClass('bg-danger', data.header.status_code !== 200);
+
+        //Show error if problem with request
+        if (data.header.status_code !== 200) {
+            $("#searchResults").html('Error ' + data.header.status_code + ' while fetching search results.');
+            return;
+        }
+
+        var tracks = data.body.track_list;
+        $("#searchResults").empty(); //Clear previous results
+        if (tracks.length === 0)
+            $("#searchResults").html('No results found for "' + $("#lyrics").val().trim() + '".')
+
+        //Create button list of results
+        for (var i = 0; i < tracks.length; i++) {
+            var track = tracks[i].track;
+            //console.log(track);
+            $("#searchResults").append(createTrack(track));
+        }
+    }
 });
