@@ -114,7 +114,7 @@ if(document.title==="Player")
                 } 
 }
 
- if(document.title==="Magic'Called")
+ if(document.title==="Musi'Called - Search")
 {
 $(".artistbutton").on("click",
 
