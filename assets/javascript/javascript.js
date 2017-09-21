@@ -5,63 +5,200 @@ $(document).ready(function () {
     var FirebaseProject = "lyricmagic-f5a1e";
     var FirebaseSenderId = "774077012043";
 
-    function gotData(data) {
-        console.log("inside gotData");
-        var users = data.val();
-        var key = data.key;
+  
+function CheckIfUserExists()
+{
+  var UserHistory;
 
-        if (CurrentUser === "") {
-            AllExistingUsers.push({
-                [key]: users
-            });
-        }
-    }
-
-    function CheckIfUserExists() {
-        for (var o = 0; o < AllExistingUsers.length; o++) {
-            console.log(AllExistingUsers[o]);
-            if (AllExistingUsers[o].Name == CurrentUser) {
-                AlreadyExists = true;
+     for(var o=0;o<AllExistingUsers.length;o++)
+        {  var _key=Object.keys(AllExistingUsers[o])[0];
+             
+             if(AllExistingUsers[o][_key]===CurrentUser)
+               {   
+                AlreadyExists=true;
+               if(document.title==="Musi'Called")
+                {
+                localStorage.setItem('key', _key);
+                localStorage.setItem('name', AllExistingUsers[o][_key]);
+                localStorage.setItem(_key, AllExistingUsersTitle[o][_key]); 
+               
+           
+                     
+                }
                 return AllExistingUsers[o];
                 break;
-            }
-        }
+               } 
+       }    
+}
+
+
+
+  function gotData(data) {
+       var users=data.val();
+  var Titles=JSON.stringify(users);
+  var key=data.key;
+ 
+
+     
+             AllExistingUsers.push({[key]:users.Name});
+             AllExistingUsersTitle.push({[key]:Titles});
+        
     }
 
     function errData() {
         console.log("An error occured");
     }
 
-    var config = {
-        apiKey: FirebaseAPI,
-        authDomain: FirebaseProject + ".firebaseapp.com",
-        databaseURL: "https://" + FirebaseProject + ".firebaseio.com",
-        projectId: FirebaseProject,
-        storageBucket: FirebaseProject + ".appspot.com",
-        messagingSenderId: FirebaseSenderId
+   
+    AlreadyExists=false;
+   AllExistingUsers=[];
+   AllExistingUsersTitle=[];
+   CurrentUser="";
+   GetUser="";
 
-    };
-    var AlreadyExists = false;
-    var AllExistingUsers = [];
-    var CurrentUser = "";
-    var GetUser = "";
-    firebase.initializeApp(config);
-    var db = firebase.database();
-    var ref = db.ref("Users");
-    ref.on("child_added", gotData, errData);
+var config=
+      {
+       apiKey: "AIzaSyD_4SK9aYkug1xi1bByqD37ZeTpLs_Z-Wc",
+       authDomain: "lyricmagic-f5a1e.firebaseapp.com",
+       databaseURL: "https://lyricmagic-f5a1e.firebaseio.com",
+       projectId: "lyricmagic-f5a1e",
+       storageBucket: "lyricmagic-f5a1e.appspot.com",
+       messagingSenderId: "774077012043"
+  
+      };
+    
+     firebase.initializeApp(config);
+     db= firebase.database();
+     var ref = db.ref("Users");
+     ref.on("child_added", gotData,errData);
+ 
+  
 
-    $("#UserLogin").on("click", function () {
-        CurrentUser = $("#AName").val();
-        GetUser = CheckIfUserExists();
-        if (!AlreadyExists) {
-            var User = db.ref('Users');
-            var UserData = {
-                Name: CurrentUser,
-                SearchText: ''
-            }
-            User.push(UserData);
-        }
-    });
+     $("#UserLogin").on("click",function(){
+      if(CurrentUser!==" ")
+       { 
+         CurrentUser= $("#exampleInputID").val();
+         //alert(CurrentUser);
+         GetUser=CheckIfUserExists();     
+
+         if(!AlreadyExists)
+          {
+           var User=db.ref('Users');
+            var UserData={
+                   Name:CurrentUser
+                   
+                     };
+           User.push(UserData);
+           GetUser=CheckIfUserExists();
+        
+          }   
+       }
+
+     
+     });
+
+
+function gotData(data)
+{
+ 
+  var users=data.val();
+  var Titles=JSON.stringify(users);
+  var key=data.key;
+
+
+     
+             AllExistingUsers.push({[key]:users.Name});
+             AllExistingUsersTitle.push({[key]:Titles});
+        
+     
+  
+}
+function errData()
+{
+  console.log("An error occured");
+}
+
+
+
+function CheckIfUserExists()
+{
+  var UserHistory;
+
+     for(var o=0;o<AllExistingUsers.length;o++)
+        {  var _key=Object.keys(AllExistingUsers[o])[0];
+             
+
+             if(AllExistingUsers[o][_key]===CurrentUser)
+               {    
+                AlreadyExists=true;
+               if(document.title==="Musi'Called - Login")
+                {
+                localStorage.setItem('key', _key);
+                localStorage.setItem('name', AllExistingUsers[o][_key]);
+                localStorage.setItem(_key, AllExistingUsersTitle[o][_key]); 
+                      
+                     
+                }
+                return AllExistingUsers[o];
+                break;
+               } 
+       }    
+}
+
+if(document.title==="Musi'Called - Search")
+{
+  
+     //SetHistory();
+    //function SetHistory(){
+    var _key=localStorage.getItem('key');
+   
+               var UserHistory=localStorage.getItem(_key);
+              
+                UserHistorySplit=UserHistory.split(',');
+                //alert(UserHistorySplit.length);
+                for(var e=0;e<UserHistorySplit.length;e++)
+                {
+                  var removeQ=UserHistorySplit[e].replace(/"/g,""," ");
+                  var removeBracksLt=removeQ.replace('{',"");
+                  var removeBracksRt=removeBracksLt.replace('}',"");
+                  var TwoParts=removeBracksRt.split(":");
+                  if(TwoParts[0]!=="Name")
+                    $("#topSearches").append("<li>"+TwoParts[0] +" .-. "+TwoParts[1]+"</li>");   
+                } 
+               // }
+
+// if(document.title==="Musi'Called - Search")
+//{
+$(".artistbutton").on("click",
+
+function(){
+
+     var _key=localStorage.getItem("key");//Object.keys(GetUser)[0]
+     
+     var _ref=db.ref("Users/"+_key);
+
+     var strData=localStorage.getItem(_key);
+
+     var splitMe=strData.split(',');
+     var glue=" ";
+    glue=splitMe[0]+",";
+     for(var t=1;t<splitMe.length-1;t++)
+     glue=glue+splitMe[t]+",";
+     
+     
+     glue=glue + '"'+$(this).text()+'"'+":"+'"'+$(this).text()+'"';
+     glue=glue+","+splitMe[splitMe.length-1];
+
+
+     _ref.set(JSON.parse(glue));
+    
+   
+
+});
+}
+
+
+
 
     //Generates a Track button
     function createTrack(track) {
